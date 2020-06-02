@@ -8,6 +8,9 @@ import SigninScreen from "./screens/SigninScreen";
 import { useSelector } from "react-redux";
 import RegisterScreen from "./screens/RegisterScreen";
 import ProductsScreen from "./screens/ProductsScreen";
+import ShippingScreen from "./screens/ShippingScreen";
+import PlaceOrderScreen from "./screens/PlaceorderScreen";
+import PaymentScreen from "./screens/PaymentScreen";
 
 function App() {
   const userSignin = useSelector((state) => state.userSignin);
@@ -31,7 +34,11 @@ function App() {
           <div className="header-links">
             <Link to="/cart">Cart</Link>
             {userInfo ? (
-              <Link to="/profile">{userInfo.name}</Link>
+              userInfo.isAdmin == 1 ? (
+                <Link to="/admin">{userInfo.name} </Link>
+              ) : (
+                <Link to="/profile">{userInfo.name}</Link>
+              )
             ) : (
               <Link to="/signin">Sign In</Link>
             )}
@@ -58,12 +65,16 @@ function App() {
             <Route path="/register" component={RegisterScreen} />
             <Route path="/signin" component={SigninScreen} />
             <Route path="/product/:id" component={ProductScreen} />
-
+            <Route path="/shipping" component={ShippingScreen} />
+            <Route path="/payment" component={PaymentScreen} />
+            <Route path="/placeorder" component={PlaceOrderScreen} />
             <Route path="/cart/:id?" component={CartScreen} />
             <Route path="/" exact={true} component={HomeScreen} />
           </div>
         </main>
-        <footer className="footer">All right reserved.</footer>
+        <footer className="footer">
+          Copyrights All right reserved by Ranvijay Singh.
+        </footer>
       </div>
     </BrowserRouter>
   );

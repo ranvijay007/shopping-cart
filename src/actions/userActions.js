@@ -12,11 +12,18 @@ import {
 const signin = (email, password) => async (dispatch) => {
   dispatch({ type: USER_SIGNIN_REQUEST, payload: { email, password } });
   try {
-    const { data } = await Axios.post("/api/users/signin", { email, password });
-    dispatch({ type: USER_SIGNIN_SUCCESS, payload: data });
-    Cookie.set("userInfo", JSON.stringify(data));
+    //const { data } = await Axios.post("/api/users/signin", { email, password });
+    Axios.post("http://localhost:8080/ecommerce/check_user.php", {
+      email: email,
+      password: password,
+    }).then(({ data }) => {
+      if (data.success === 1) {
+        dispatch({ type: USER_SIGNIN_SUCCESS, payload: data.user });
+        Cookie.set("userInfo", JSON.stringify(data.user));
+      }
+    });
   } catch (error) {
-    dispatch({ type: USER_SIGNIN_FAIL, payload: error.message });
+    dispatch({ type: USER_SIGNIN_FAIL, payload: error.msg });
   }
 };
 
@@ -36,7 +43,7 @@ const register = (name, email, password) => async (dispatch) => {
       }
     });
   } catch (error) {
-    dispatch({ type: USER_REGISTER_FAIL, payload: error.message });
+    dispatch({ type: USER_REGISTER_FAIL, payload: error.msg });
   }
 };
 

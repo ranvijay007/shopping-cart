@@ -8,7 +8,9 @@ function SigninScreen(props) {
   const [password, setPassword] = useState("");
   const userSignin = useSelector((state) => state.userSignin);
   const { loading, userInfo, error } = userSignin;
-
+  const redirect = props.location.search
+    ? props.location.search.split("=")[1]
+    : "/";
   const dispatch = useDispatch();
   const submitHandler = (e) => {
     e.preventDefault();
@@ -17,7 +19,7 @@ function SigninScreen(props) {
 
   useEffect(() => {
     if (userInfo) {
-      props.history.push("/");
+      props.history.push(redirect);
     }
   }, [userInfo]);
 
@@ -57,7 +59,12 @@ function SigninScreen(props) {
           </li>
           <li>New to Amazona?</li>
           <li>
-            <Link to="/register" className="button secondary text-center">
+            <Link
+              to={
+                redirect === "/" ? "register" : "register?redirect=" + redirect
+              }
+              className="button secondary text-center"
+            >
               Create your new account
             </Link>
           </li>

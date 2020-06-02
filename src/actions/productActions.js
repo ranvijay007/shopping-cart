@@ -26,7 +26,7 @@ const listProducts = () => async (dispatch) => {
       });
     });
   } catch (error) {
-    dispatch({ type: PRODUCT_LIST_FAIL, payload: error.message });
+    dispatch({ type: PRODUCT_LIST_FAIL, payload: error.msg });
   }
 };
 
@@ -37,26 +37,31 @@ const saveProduct = (product) => async (dispatch, getState) => {
       userSignin: { userInfo },
     } = getState();
     if (!product._id) {
-      //const { data } = await axios.post("/api/products", product});
       axios
         .post("http://localhost:8080/ecommerce/add_product.php", product)
         .then(({ data }) => {
           dispatch({ type: PRODUCT_SAVE_SUCCESS, payload: data.product });
         });
     } else {
-      const { data } = await axios.put(
-        "/api/products/" + product._id,
-        product,
-        {
-          headers: {
-            Authorization: "Bearer" + userInfo.token,
-          },
-        }
-      );
-      dispatch({ type: PRODUCT_SAVE_SUCCESS, payload: data });
+      // const { data } = await axios.put(
+      //   "/api/products/" + product._id,
+      //   product,
+      //   {
+      //     headers: {
+      //       Authorization: "Bearer" + userInfo.token,
+      //     },
+      //   }
+      // );
+      axios
+        .post("http://localhost:8080/ecommerce/update_product.php", product)
+        .then(({ data }) => {
+          if (data.success === 1) {
+            dispatch({ type: PRODUCT_SAVE_SUCCESS, payload: data.product });
+          }
+        });
     }
   } catch (error) {
-    dispatch({ type: PRODUCT_SAVE_FAIL, payload: error.message });
+    dispatch({ type: PRODUCT_SAVE_FAIL, payload: error.msg });
   }
 };
 
@@ -73,7 +78,7 @@ const detailsProduct = (productId) => async (dispatch) => {
         }
       });
   } catch (error) {
-    dispatch({ type: PRODUCT_DETAILS_FAIL, payload: error.message });
+    dispatch({ type: PRODUCT_DETAILS_FAIL, payload: error.msg });
   }
 };
 
@@ -83,14 +88,26 @@ const deleteProduct = (productId) => async (dispatch, getState) => {
       userSignin: { userInfo },
     } = getState();
     dispatch({ type: PRODUCT_DELETE_REQUEST, payload: productId });
-    const { data } = await axios.delete("/api/products/" + productId, {
-      headers: {
-        Authorization: "Bearer " + userInfo.token,
-      },
-    });
-    dispatch({ type: PRODUCT_DELETE_SUCCESS, payload: data, success: true });
+    // const { data } = await axios.delete("/api/products/" + productId, {
+    //   headers: {
+    //     Authorization: "Bearer " + userInfo.token,
+    //   },
+    // });
+    axios
+      .post("http://localhost:8080/ecommerce/delete_product.php", {
+        id: productId,
+      })
+      .then(({ data }) => {
+        if (data.success === 1) {
+          dispatch({
+            type: PRODUCT_DELETE_SUCCESS,
+            payload: data,
+            success: true,
+          });
+        }
+      });
   } catch (error) {
-    dispatch({ type: PRODUCT_DELETE_FAIL, payload: error.message });
+    dispatch({ type: PRODUCT_DELETE_FAIL, payload: error.msg });
   }
 };
 
